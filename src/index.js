@@ -1,74 +1,80 @@
 const url = "http://localhost:3000/pups"
-const filterButton = document.querySelector("#good-dog-filer")
+
+
 let dogsCopy
 let displayedDogId
+let goodDogList
 
 function getDogs()
 {
-    return fetch(url)
+    fetch(url)
         .then(resp => resp.json())
         .then(dogData => {
-            dogData.forEach(dog => createNavBar(dog))
 
             dogsCopy = dogData
+
+            createNavBar(dogData)
             
             displayDogInfo(dogData[0])
 
-            //filterGoodDog()
+            const filterButton = document.querySelector("#good-dog-filter")
+            filterButton.addEventListener("click", () => filterGoodDog(dogData))
         })
 }
 
-// function filterGoodDog()
-// {
-//     filterButton.addEventListener("click", () => {
-//         filterButton.innerText.includes("OFF") ? filterButton.innerText = 
-//         "Filter good dogs: ON" : filterButton.innerText = "Filter good dogs: OFF"
-//         updatedDogBar()
-//     })
-// }
-
-// function updatedDogBar()
-// {
-//     if(filterButton.innerText.includes("OFF")
-//     {
-//         getDogs()
-//             .then(dogs => addPupsToDogNavBar(dogs))
-//     })
-
-//     else
-//     {
-//         getDogs()
-//             .then(dogs => addPupsToDogNavBar(dogs, true))
-//     }
-// }
-
-// function addPupsToDogBar(dogData, filter = false)
-// {
-//     if(filter)
-//     {
-//         dogData.filter(dog => dog.isGoodDig)
-//             .forEach(addDogSpanToNav)
-//     }
-
-//     else
-//     {
-//         dogData.forEach(addDogSpanToNav)
-//     }
-// }
-
-// function addDogSpanToNav()
-// {
-
-// }
-
-function createNavBar(dog)
+function filterGoodDog(dogs)
 {
+    const filterButton = document.querySelector("#good-dog-filter")
+
+    goodDogList = []
     const dogBarElement = document.getElementById("dog-bar")
-    const dogNameSpanElement = document.createElement("span")
-    dogNameSpanElement.textContent = dog.name
-    dogBarElement.appendChild(dogNameSpanElement)
+    dogBarElement.innerText = ""
+
+    if (filterButton.innerText.includes("OFF"))
+    {
+        filterButton.innerText = "Filter good dogs: ON"
+
+        dogs.forEach(dog => 
+        {
+            if (dog.isGoodDog)
+            {
+                goodDogList.push(dog)
+            }
+        })
+
+        createNavBar(goodDogList)
+    }
+
+    else
+    {
+        filterButton.innerText = "Filter good dogs: OFF"
+        createNavBar(dogsCopy)
+    }
+}
+
+function createNavBar(dogs)
+{
+    if (dogs.length > 0)
+    {
+        dogs.forEach(dog=> {
+            const dogBarElement = document.getElementById("dog-bar")
+            const dogNameSpanElement = document.createElement("span")
+            dogNameSpanElement.textContent = dog.name
+            dogBarElement.appendChild(dogNameSpanElement)
     
-    dogNameSpanElement.addEventListener("click", () => displayDogInfo(dog))
+            dogNameSpanElement.addEventListener("click", () => displayDogInfo(dog))
+        })
+    }
+
+    else
+    {
+
+        // displayedImgElement.src = ""
+        // displayedNameElement. textContent = "No good dog to display"
+        // goodBadButtonElement.textContent = "Error"
+
+        alert("Oh no! There are no good dogs!")
+    }
 }
 
 function displayDogInfo(dog)
